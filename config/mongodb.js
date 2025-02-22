@@ -3,7 +3,7 @@ const connectToDB =async()=>
 {
     try
     {
-        await mongoose.connect('mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.3.3');
+        await mongoose.connect('mongodb+srv://akshithaoleti:akshi%401408@cluster0.1auzo.mongodb.net/');
 
         console.log('database connection is established');
     }

@@ -1,4 +1,10 @@
 const admin = require("firebase-admin");
+const https = require("https");
+
+/*const agent = new https.Agent({
+    rejectUnauthorized: false,  
+});*/
+
 
 let serviceAccount;
 
@@ -8,7 +14,7 @@ try {
 catch (error) 
 {
   console.error("Invalid FIREBASE_CONFIG:", error);
-  process.exit(1); // Exit the process if the config is invalid
+  process.exit(1); 
 }
 
 try 
@@ -16,12 +22,15 @@ try
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
+
+  //process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
   console.log("Firebase Admin SDK initialized successfully.");
 } 
+
 catch (error) 
 {
   console.error("Failed to initialize Firebase Admin SDK:", error);
-  process.exit(1); // Exit the process if initialization fails
+  process.exit(1);
 }
 
 module.exports = admin;
