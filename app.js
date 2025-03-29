@@ -12,8 +12,10 @@ const bodyParser = require("body-parser");
 const paymentRoutes = require("./routes/paymentRoutes");
 const productRoutes = require("./routes/productRoutes");
 const cartRoutes = require("./routes/cartRoutes");
-const orderRoutes = require("./routes/orderRoutes");
+const orderRoutes = require("./routes/orderRoutes");;
+
 var cors = require("cors");
+
 var app = express();
 
 // view engine setup

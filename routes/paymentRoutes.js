@@ -1,11 +1,12 @@
 const express = require("express");
-const { createPayment } = require("../controllers/paymentController");
-const handleWebhook = require("../routes/webhook/razorpayWebhook");
-const authMiddleware = require("../middleware/authMiddleware");
-
 const router = express.Router();
+const { createPayment, verifyPayment, success } = require("../controllers/paymentController");
 
-router.post("/create/:orderId", authMiddleware, createPayment);
-router.post("/webhook", handleWebhook);
+router.post("/create/:orderId", createPayment);
+
+
+router.post("/verify", verifyPayment);
+
+router.get("/success", success);
 
 module.exports = router;
