@@ -15,7 +15,7 @@ const addToCart = async (req, res) =>
         let product; 
         try 
         {
-            const response = await axios.get(`http://localhost:3003/api/products/getproduct/${productId}`);
+            const response = await axios.get(`http://localhost:8000/api/products/getproduct/${productId}`);
             product = response.data.data;
             //console.log(product);
         } 

@@ -1,101 +1,81 @@
 const Order = require("../models/Order");
 const axios = require("axios");
 
-
 const placeOrder = async (req, res) => 
 {
-    try {
+    try 
+    {
         const userId = req.user.userId;
-        const token = req.headers.authorization; 
+        const token = req.headers.authorization;
 
-        
         const cartResponse = await axios.get(
-            `http://localhost:3001/api/cart/getcart/${userId}`,
+            `http://localhost:8000/api/cart/getcart/${userId}`,
             { headers: { Authorization: token } }
         );
 
-        //console.log(cartResponse);
         const cart = cartResponse.data;
         if (!cart || cart.items.length === 0) {
             return res.status(400).json({ message: "Your cart is empty" });
         }
-        
 
         const totalAmount = cart.totalPrice;
-        //console.log(totalAmount);
+        const orderProducts = cart.items.map(item => ({
+            productId: item.productId,
+            quantity: item.quantity
+        }));
 
+        const order = new Order({
+            userId,
+            items: orderProducts,
+            totalAmount,
+            status: "Processing"
+        });
+        
+        await order.save();  // Save order to database
+
+        console.log(order);
+        
         res.status(200).json({
+            orderId: order._id,
             success: true,
             message: "Please confirm to proceed with payment.",
-            Amount:totalAmount,
+            amount: totalAmount,
             cartItems: cart.items
         });
 
-    } catch (error) 
-    {
-        console.error(error);
-        res.status(500).json({ error: "Something went wrong while fetching the bill" });
+    } catch (error) {
+        //console.error(error);  // Log error for debugging
+        res.status(500).json({ error: error.message });
     }
 };
 
 
 const confirmAndPayOrder = async (req, res) => {
     try {
-        const userId = req.user.userId;
+        const orderId = req.params.orderId;
         const token = req.headers.authorization;
-
-    
-        const cartResponse = await axios.get(
-            `http://localhost:3001/api/cart/getcart/${userId}`,
-            { headers: { Authorization: token } }
-        );
-
-        const cart = cartResponse.data;
-        if (!cart || cart.items.length === 0) {
-            return res.status(400).json({ message: "Your cart is empty" });
-        }
-
-        const totalAmount = cart.total_price;
-
-        
-        const orderProducts = cart.items.map(item => ({
-            productId: item.productId,
-            quantity: item.quantity,
-            tailorName: item.tailorName,
-            price: item.price,
-        }));
-
-        
-        const order = new Order({
-            userId,
-            products: orderProducts,
-            totalAmount,
-            status: "Pending"
-        });
-
-        await order.save();
-        const orderId = order._id;
-
-        
+        console.log(orderId);
+        console.log(token);
         const paymentResponse = await axios.post(
-            `http://localhost:3002/api/payment/createPayment/${orderId}`,
+            `http://localhost:8000/api/payment/create/${orderId}`,
+            {},  // If no request body is needed
             { headers: { Authorization: token } }
         );
-
-        const { status} = paymentResponse.data;
-
         
+
+        const { status, error } = paymentResponse.data;
+
         if (status !== "completed") {
-            return res.status(400).json({ message: "Payment failed. Order not confirmed." });
+            return res.status(400).json({ 
+                message: "Payment failed. Order not confirmed.", 
+                reason: error || "Unknown error"
+            });
         }
 
         
-        order.status = "Completed";
-        await order.save();
-
-        
+        // Clear the cart after order confirmation
         await axios.delete(
-            `http://localhost:3001/api/cart/clear/${userId}`,
+            `http://localhost:8000/api/cart/clear/${userId}`,
             { headers: { Authorization: token } }
         );
 
@@ -105,10 +85,9 @@ const confirmAndPayOrder = async (req, res) => {
             order
         });
 
-    } 
-    catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Something went wrong while confirming and paying for the order" });
+    } catch (error) {
+       console.error(error.message); 
+        res.status(500).json({ error: error.message });
     }
 };
 
@@ -121,7 +100,7 @@ const getAllOrders = async (req, res) => {
         const totalOrders = await Order.countDocuments({ userId });
 
 
-        
+       // console.log(totalOrders);
         if (totalOrders === 0) {
             return res.status(200).json({
                 success: true,
@@ -135,8 +114,8 @@ const getAllOrders = async (req, res) => {
         const orders = await Order.find({ userId })
             .limit(Number(limit))
             .skip((Number(page) - 1) * Number(limit))
-            .populate("products.productId", "name price image")
-            .populate("userId", "email name");
+
+        console.log(orders);
 
         res.status(200).json({
             success: true,
@@ -152,17 +131,27 @@ const getAllOrders = async (req, res) => {
 };
 
 
-const getOrderById = async (req, res) => {
+const getOrderById = async (req, res) =>
+ {
     try {
-        const order = await Order.findById(req.params.id);
+        const orderId  = req.params.id;
 
-        if (!order) return res.status(404).json({ message: "Order not found" });
+        const order = await Order.findById(orderId)
+             .populate({
+                 path: "items.productId",
+                 select: "name price image description"
+             });
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
 
-        res.status(200).json({ success: true, data: order });
+    res.status(200).json({ success: true, order});
+
     } 
     catch (error) 
     {
-        res.status(500).json({ error: "Something went wrong while fetching order" });
+        console.error("Error fetching order products:", error.message);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 };
 

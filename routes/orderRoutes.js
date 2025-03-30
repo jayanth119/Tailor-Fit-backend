@@ -16,7 +16,7 @@ const router = express.Router();
 
 // Order routes
 router.get("/placeorder", authMiddleware, placeOrder);
-router.post("/confirmorder", authMiddleware, confirmAndPayOrder);
+router.post("/confirmorder/:orderId", authMiddleware, confirmAndPayOrder);
 router.get("/getorders", authMiddleware, getAllOrders);
 router.get("/getorderbyid/:id", authMiddleware, getOrderById);
 router.put("/updateorder/:id", authMiddleware, updateOrderStatus);
