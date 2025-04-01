@@ -4,8 +4,10 @@ const axios = require("axios");
 const path = require('path');
 const { validateWebhookSignature } = require('razorpay/dist/utils/razorpay-utils');
 
-const createPayment = async (req, res) => {
-    try {
+const createPayment = async (req, res) => 
+    {
+    try 
+    {
 
         const userId = req.user.userId;
         const orderId = req.params.orderId;
@@ -21,7 +23,8 @@ const createPayment = async (req, res) => {
         );
         const order = orderResponse.data;
 
-        if (!order) {
+        if (!order) 
+        {
             return res.status(404).json({ message: "Order not found" });
         }
         const amount = order.order.totalAmount; 
