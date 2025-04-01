@@ -31,7 +31,7 @@ const placeOrder = async (req, res) =>
             status: "Processing"
         });
         
-        await order.save();  // Save order to database
+        await order.save();  
 
         console.log(order);
         
@@ -44,7 +44,7 @@ const placeOrder = async (req, res) =>
         });
 
     } catch (error) {
-        //console.error(error);  // Log error for debugging
+        //console.error(error);  
         res.status(500).json({ error: error.message });
     }
 };
@@ -58,14 +58,15 @@ const confirmAndPayOrder = async (req, res) => {
         console.log(token);
         const paymentResponse = await axios.post(
             `http://localhost:8000/api/payment/create/${orderId}`,
-            {},  // If no request body is needed
+            {}, 
             { headers: { Authorization: token } }
         );
         
 
         const { status, error } = paymentResponse.data;
 
-        if (status !== "completed") {
+        if (status !== "completed") 
+        {
             return res.status(400).json({ 
                 message: "Payment failed. Order not confirmed.", 
                 reason: error || "Unknown error"
@@ -73,7 +74,6 @@ const confirmAndPayOrder = async (req, res) => {
         }
 
         
-        // Clear the cart after order confirmation
         await axios.delete(
             `http://localhost:8000/api/cart/clear/${userId}`,
             { headers: { Authorization: token } }
