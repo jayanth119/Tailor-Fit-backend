@@ -7,6 +7,14 @@ const TailorSchema = new mongoose.Schema({
     required: true,
   },
 
+  tailorId: 
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+    unique: true, 
+  },
+
   acceptedOrders: 
   [
     {

@@ -84,8 +84,12 @@ const verifyOTP = async (req, res) => {
 
 const createProfile = async (req, res) => 
   {
-  const { name, phoneNumber, address, photo, dob, gender } = req.body;
+  const { name, phoneNumber, address, photo, dob, gender,usertype } = req.body;
+  if(!["customer","tailor"].includes(usertype))
+  return res.status(400).json({ message: "Invalid user type" });
+
   const email = req.user.email;
+
 
   try {
   
@@ -101,7 +105,7 @@ const createProfile = async (req, res) =>
           return res.status(400).json({ message: "Invalid date format. Use YYYY-MM-DD." });
 
       
-      user.profile = { name, phoneNumber, address, photo, dob: formattedDob, gender };
+      user.profile = { name, phoneNumber, address, photo, dob: formattedDob, gender ,usertype};
       await user.save();
 
 
