@@ -46,7 +46,7 @@ const registerUser = async (req, res) => {
       await user.save();
   
       await sendOTPEmail(email, otp);
-      print(otp)
+    //   print(otp)
   
       const token = jwt.sign(
           { userId: user.id, email: user.email },
@@ -109,7 +109,7 @@ const createProfile = async (req, res) =>
       await user.save();
 
 
-      res.json({ message: "Profile updated successfully", profile: user.profile });
+      res.json({ message: "Profile updated successfully", id:user._id,profile:user.profile });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -134,7 +134,7 @@ const loginUser = async (req, res) =>
           { expiresIn: '1h' }
       );
 
-        res.json({ message: "Login successful", token});
+        res.json({ message: "Login successful",id:user._id,token: token});
     } catch (error) {
         res.status(500).json({message: error.message});
     }

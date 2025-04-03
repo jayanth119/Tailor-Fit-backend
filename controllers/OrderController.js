@@ -14,6 +14,9 @@ const placeOrder = async (req, res) =>
         );
 
         const cart = cartResponse.data;
+        //console.log(cart);
+        const tailorId=cart.tailorId;
+
         if (!cart || cart.items.length === 0) {
             return res.status(400).json({ message: "Your cart is empty" });
         }
@@ -26,22 +29,28 @@ const placeOrder = async (req, res) =>
 
         const order = new Order({
             userId,
+            tailorId,
             items: orderProducts,
             totalAmount,
-            status: "Processing"
+            status: "Processing",
+            accepted:"false"
+
         });
-        
-        await order.save();  
 
         console.log(order);
         
+        await order.save();  
+
+        
         res.status(200).json({
             orderId: order._id,
+            tailorId,
             success: true,
             message: "Please confirm to proceed with payment.",
             amount: totalAmount,
             cartItems: cart.items
         });
+        
 
     } catch (error) {
         //console.error(error);  

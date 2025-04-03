@@ -7,17 +7,18 @@ const addToCart = async (req, res) =>
     try { 
         const userId = req.user.userId;
 
-        //console.log(req.user);
         const  productId  = req.params.productId; 
-        //console.log(productId);
-        const { quantity, tailorName } = req.body;
+
+        const { quantity, tailorId } = req.body;
+
+        console.log(tailorId);
 
         let product; 
         try 
         {
             const response = await axios.get(`http://localhost:8000/api/products/getproduct/${productId}`);
             product = response.data.data;
-            //console.log(product);
+            // console.log(product);
         } 
         catch (error) 
         {
@@ -26,18 +27,21 @@ const addToCart = async (req, res) =>
 
         let cart = await Cart.findOne({ userId});
         if (!cart) {
-            cart = new Cart({ userId, items: [], totalPrice: 0 });
+            cart = new Cart({ userId, tailorId,items: [], totalPrice: 0 });
         }
+        console.log(cart);
 
         
-        const itemIndex = cart.items.findIndex(item => 
-            item.productId.toString() === productId.toString() && item.tailorName === tailorName
+        const itemIndex = cart.items.findIndex(item =>
+            item.productId.toString() === productId.toString()
         );
 
         if (itemIndex > -1) {
             cart.items[itemIndex].quantity += quantity;
-        } else {
-            cart.items.push({ productId, quantity, price: product.price, tailorName });
+        }
+         else 
+        {
+            cart.items.push({ productId, quantity, price: product.price });
         }
 
         

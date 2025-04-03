@@ -14,6 +14,7 @@ const getAcceptedOrders = async (req, res) =>
     if (!tailor) return res.status(404).json({ message: "Tailor orders not found" });
 
     res.status(200).json({ acceptedOrders: tailor.acceptedOrders });
+    
   } 
 
   catch (error) 
@@ -42,11 +43,11 @@ const OrderAccept = async (req, res) =>
 
     const tailorId=order.tailorId;
 
-    const tailor = await Tailor.findOne({tailorId});
-    if (!tailor) 
-    {
-      return res.status(404).json({ message: "Tailor not found" });
-    }
+    //const tailor = await Order.findOne({tailorId});
+    //if (!tailor) 
+    //{
+     // return res.status(404).json({ message: "Tailor not found" });
+    //}
 
 
     order.accepted = "true";

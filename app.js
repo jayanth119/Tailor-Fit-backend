@@ -14,6 +14,7 @@ const productRoutes = require("./routes/productRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const orderRoutes = require("./routes/orderRoutes");;
 const tryonRoutes = require("./routes/tryonRoutes"); 
+const TailorRoutes=require("./routes/TailorRoutes");
 var cors = require("cors");
 
 var app = express();
@@ -39,6 +40,8 @@ app.use('/api/products', productRoutes);
 app.use("/api/cart", cartRoutes); 
 app.use("/api/payment", paymentRoutes);
 app.use("/api/tryon", tryonRoutes);
+app.use("/api/tailors",TailorRoutes);
+
 app.use('/uploads', express.static('uploads'));
 // Connect to MongoDB
 connectToDB();
