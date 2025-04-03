@@ -13,7 +13,7 @@ const paymentRoutes = require("./routes/paymentRoutes");
 const productRoutes = require("./routes/productRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const orderRoutes = require("./routes/orderRoutes");;
-
+const tryonRoutes = require("./routes/tryonRoutes"); 
 var cors = require("cors");
 
 var app = express();
@@ -38,6 +38,8 @@ app.use("/api/auth", authroutes);
 app.use('/api/products', productRoutes);
 app.use("/api/cart", cartRoutes); 
 app.use("/api/payment", paymentRoutes);
+app.use("/api/tryon", tryonRoutes);
+app.use('/uploads', express.static('uploads'));
 // Connect to MongoDB
 connectToDB();
 // catch 404 and forward to error handler

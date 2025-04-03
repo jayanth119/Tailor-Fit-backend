@@ -36,6 +36,11 @@ const productSchema=new mongoose.Schema({
     {
         type:String,
         required:true
+    },
+    gender :{
+        type: String,
+        required: true,
+        enum: ["male", "female"]
     }
 });
 module.exports=mongoose.model('Product',productSchema);
