@@ -5,10 +5,9 @@ const path = require('path');
 const { validateWebhookSignature } = require('razorpay/dist/utils/razorpay-utils');
 
 const createPayment = async (req, res) => 
-    {
+{
     try 
     {
-
         const userId = "67ed1b8cc3530ee4a7f936b8";
         const orderId = req.params.orderId;
         const token = req.headers.authorization;
@@ -27,7 +26,10 @@ const createPayment = async (req, res) =>
         {
             return res.status(404).json({ message: "Order not found" });
         }
-        const amount = order.order.totalAmount; 
+
+
+       const amount = order.order.totalAmount; 
+       await order.save();
         const options = {
             amount: amount * 100,
             currency: "INR",
@@ -55,8 +57,9 @@ const createPayment = async (req, res) =>
             razorpayOrder
         });
 
-    } 
-    catch (error) 
+}
+    
+   catch (error) 
     {
         res.status(500).json({ message: "Error creating payment", error: error.message });
     }
@@ -80,11 +83,18 @@ const verifyPayment = async(req, res) =>
         } 
         
         const event = req.body.event;
- 
         if (event === "payment.captured") 
         {
             const { order_id, payment_id, amount } = req.body.payload.payment.entity;
 
+            const order=await Order.findById(order_id);
+            if (!order) 
+            {
+                return res.status(404).json({ message: "Order not found" });
+            }
+
+            order.status="completed";
+            await order.save();
             // Update payment status
             const payment = await Payment.findOneAndUpdate(
                 { razorpayOrderId: order_id },

@@ -6,13 +6,9 @@ const TailorSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  
-  tailorId: {
-    type: mongoose.Schema.Types.ObjectId, 
-    default: () => new mongoose.Types.ObjectId(),
-    unique: true,
-  },
-  acceptedOrders: [
+
+  acceptedOrders: 
+  [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Order",
