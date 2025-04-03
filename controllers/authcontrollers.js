@@ -7,7 +7,8 @@ const { generateOTP, sendOTPEmail } = require("../utils/otpService");
 const registerUser = async (req, res) => {
   const { email, password, confirmPassword, username } = req.body;
 
-  if (password !== confirmPassword) {
+  if (password !== confirmPassword) 
+    {
       return res.status(400).json({ message: "Passwords do not match" });
   }
   
@@ -35,7 +36,7 @@ const registerUser = async (req, res) => {
   
       const user = new User({
           email,
-          username, // Now including username from request
+          username, 
           password: hashedPassword,
           otp,
           otpExpires,

@@ -7,6 +7,9 @@ const UserSchema = new mongoose.Schema({
     otpExpires: { type: Date },
     firebaseUid: { type: String, unique: true }, 
     isVerified: { type: Boolean, default: false }, 
+    usertype:{type:String,
+        enum:["customer","tailor"],
+        default:"customer"},
     profile: {
         name: { type: String },
         phoneNumber: { type: String },
