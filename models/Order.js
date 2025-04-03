@@ -8,6 +8,13 @@ const OrderSchema = new mongoose.Schema(
       required: true,
       index: true, 
     },
+
+    tailorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Tailor", 
+      required: true
+    },
+
     items: [
       {
         productId: {
@@ -33,7 +40,14 @@ const OrderSchema = new mongoose.Schema(
       enum: ["Processing", "Shipped", "Delivered", "Cancelled", "Returned", "Out for Delivery"],
       default: "Processing",
     },
+
+    accepted:{
+      type:String,
+      enum:["true","false","null"],
+      default:"null"
+    }
   },
+ 
   { timestamps: true } 
 );
 
