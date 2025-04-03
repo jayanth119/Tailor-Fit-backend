@@ -4,66 +4,60 @@ const admin = require("../config/firebase");
 const User = require("../models/user");
 const { generateOTP, sendOTPEmail } = require("../utils/otpService");
 
-const registerUser = async (req, res) => 
-  {
-    const { email, password, confirmPassword } = req.body;
+const registerUser = async (req, res) => {
+  const { email, password, confirmPassword, username } = req.body;
 
-    if (password !== confirmPassword) 
-    {
+  if (password !== confirmPassword) {
       return res.status(400).json({ message: "Passwords do not match" });
-    }
-    
-    try {
+  }
+  
+  try {
       let firebaseUser;
-    
+  
       try {
-        firebaseUser = await admin.auth().getUserByEmail(email);
-        return res.status(400).json({ message: "Email already in use" });
+          firebaseUser = await admin.auth().getUserByEmail(email);
+          return res.status(400).json({ message: "Email already in use" });
+      } catch (error) {
+          if (error.code !== "auth/user-not-found") {
+              return res.status(500).json({ message: "Error checking Firebase user", error: error.message });
+          }
       }
-       catch (error) 
-       {
-        
-        if (error.code !== "auth/user-not-found") {
-          return res.status(500).json({ message: "Error checking Firebase user", error: error.message });
-        }
-      }
-    
-    
+  
       firebaseUser = await admin.auth().createUser({
-        email: email,
-        password: password,
+          email: email,
+          password: password,
       });
-    
+  
       const hashedPassword = await bcrypt.hash(password, 10);
-    
+  
       const otp = generateOTP();
       const otpExpires = new Date(Date.now() + 5 * 60 * 1000);
-    
-      
+  
       const user = new User({
-        email,
-        password: hashedPassword,
-        otp,
-        otpExpires,
-        firebaseUid: firebaseUser.uid,
+          email,
+          username, // Now including username from request
+          password: hashedPassword,
+          otp,
+          otpExpires,
+          firebaseUid: firebaseUser.uid,
       });
-    
+  
       await user.save();
-    
+  
       await sendOTPEmail(email, otp);
-    
-      const token=jwt.sign(
-        { userId: user.id, email: user.email },
-        process.env.JWT_SECRET,
-        { expiresIn: '1h' }
-    );
-    
+      print(otp)
+  
+      const token = jwt.sign(
+          { userId: user.id, email: user.email },
+          process.env.JWT_SECRET,
+          { expiresIn: '1h' }
+      );
+  
       res.status(201).json({ message: "OTP sent for verification", token });
-    
-    } catch (error) {
+  
+  } catch (error) {
       res.status(500).json({ message: error.message });
-    }
-    
+  }
 };
 
 

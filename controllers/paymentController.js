@@ -9,7 +9,7 @@ const createPayment = async (req, res) =>
     try 
     {
 
-        const userId = req.user.userId;
+        const userId = "67ed1b8cc3530ee4a7f936b8";
         const orderId = req.params.orderId;
         const token = req.headers.authorization;
         if (!orderId) 

@@ -7,15 +7,17 @@ const createProduct = async (req, res) => {
     try {
         //console.log("Received Data:", req.body);  
 
-        const { name, description, size, price, stock, category, image } = req.body;
+        const { name, description, size, price, stock, category, image , gender } = req.body;
 
-        if (!name || !price || !stock || !category || !image || !description || !size) {
+        if (!name || !price || !stock || !category || !image || !description || !size || !gender) {
             return res.status(400).json({ message: "All fields are required: name, description, size, price, stock, category, image" });
         }
 
         if (!["S", "M", "L", "XL", "XXL", "XXXL"].includes(size)) {
             return res.status(400).json({ error: "Invalid size. Allowed values: S, M, L, XL, XXL, XXXL." });
         }
+        if(!["male","female"].includes(gender)){
+            return res.status(400).json({ error: "Invalid gender. Allowed values: male, female." });}
 
         const product = new Product(req.body);
         await product.save();
