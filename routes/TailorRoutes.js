@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
-const {getAcceptedOrders,OrderAccept,OrderReject,totalOrders,completedOrders,pendingOrders,markAsCompleted}=require("../controllers/TailorController");
+const {showAllOrders,getAcceptedOrders,OrderAccept,OrderReject,totalOrders,completedOrders,pendingOrders,markAsCompleted}=require("../controllers/TailorController");
+
+router.get("/getallorders/:tailorId", showAllOrders); 
 router.post("/accept-order/:orderId", OrderAccept); 
 router.post("/reject-order/:orderId", OrderReject);
 router.get("/accepted-orders/:tailorId", getAcceptedOrders);

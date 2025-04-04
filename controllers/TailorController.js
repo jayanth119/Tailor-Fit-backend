@@ -1,6 +1,27 @@
 const Tailor = require("../models/Tailor");
 const Order = require("../models/Order");
 
+const showAllOrders=async(req,res)=>
+{
+  try
+  {
+      const  tailorId  = req.params.tailorId;
+      //console.log(tailorId);
+      if (!tailorId) return res.status(400).json({ message: "Tailor ID is required" });
+      const orders = await Order.find({
+        tailorId:tailorId,
+        accepted: "null"
+      });
+      console.log(orders);
+      
+      if (!orders) return res.status(404).json({ message: "No orders found" });
+      res.status(200).json({ orders });
+    }
+  catch(error)
+  {
+    res.status(500).json({ message: error.message });
+  }
+}
 
 const getAcceptedOrders = async (req, res) => 
 {
@@ -36,6 +57,7 @@ const OrderAccept = async (req, res) =>
     }
 
     const order = await Order.findById(orderId);
+
     if (!order) 
     {
       return res.status(404).json({ message: "Order not found" });
@@ -43,11 +65,11 @@ const OrderAccept = async (req, res) =>
 
     const tailorId=order.tailorId;
 
-    //const tailor = await Order.findOne({tailorId});
-    //if (!tailor) 
-    //{
-     // return res.status(404).json({ message: "Tailor not found" });
-    //}
+    const tailor = await Order.findOne({tailorId});
+    if (!tailor) 
+    {
+      return res.status(404).json({ message: "Tailor not found" });
+    }
 
 
     order.accepted = "true";
@@ -201,4 +223,4 @@ const markAsCompleted=async()=>
             res.status(500).json({ message: error.message });
         }
 }
-module.exports={getAcceptedOrders,OrderAccept,OrderReject,totalOrders,completedOrders,pendingOrders,markAsCompleted};
+module.exports={showAllOrders,getAcceptedOrders,OrderAccept,OrderReject,totalOrders,completedOrders,pendingOrders,markAsCompleted};
