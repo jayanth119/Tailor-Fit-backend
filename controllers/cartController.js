@@ -1,6 +1,7 @@
 const axios = require("axios"); 
 const Cart = require("../models/Cart");
-
+const mongone = require("mongoose");
+const Product = require("../models/productModel");
 
 const addToCart = async (req, res) => 
 {
@@ -43,19 +44,23 @@ const addToCart = async (req, res) =>
         {
             cart.items.push({ productId, quantity, price: product.price });
         }
-
-        
-        cart.totalPrice = cart.items.reduce((sum, item) => sum + item.quantity * item.price, 0);
-        await cart.save();
-
-        res.status(200).json({ message: "Item added to cart", cart });
-    } 
-    catch (error) 
-    {
-        console.error("Add to cart error:", error.message);
-        res.status(500).json({ error: "Something went wrong" });
+  
+      // Recalculate the total price safely by checking each item
+      cart.totalPrice = cart.items.reduce((sum, item) => {
+        const itemQuantity =
+          typeof item.quantity === "number" && item.quantity > 0 ? item.quantity : 0;
+        const itemPrice =
+          typeof item.price === "number" && item.price > 0 ? item.price : 0;
+        return sum + itemQuantity * itemPrice;
+      }, 0);
+  
+      await cart.save();
+      res.status(200).json({ message: "Item added to cart", cart });
+    } catch (error) {
+      console.error("Add to cart error:", error.message);
+      res.status(500).json({ error: "Something went wrong" });
     }
-};
+  };
 
 // Remove from Cart
 const removeFromCart = async (req, res) => {
