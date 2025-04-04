@@ -10,7 +10,7 @@ const createProduct = async (req, res) => {
         const { name, description, size, price, stock, category, image , gender } = req.body;
 
         if (!name || !price || !stock || !category || !image || !description || !size || !gender) {
-            return res.status(400).json({ message: "All fields are required: name, description, size, price, stock, category, image" });
+            return res.status(400).json({ message: "All fields are required: name, description, size, price, stock, category, image,gender" });
         }
 
         if (!["S", "M", "L", "XL", "XXL", "XXXL"].includes(size)) {

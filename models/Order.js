@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const OrderSchema = new mongoose.Schema(
   {
+    
     userId: 
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -10,11 +11,11 @@ const OrderSchema = new mongoose.Schema(
       index: true,
     },
 
-    tailorId: {
+    tailorId: [{
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Tailor",
+      ref: "User",
       required: true,
-    },
+    }], 
 
     items: [
       {
@@ -50,17 +51,20 @@ const OrderSchema = new mongoose.Schema(
 
     totalOrders:
     {
-      type:Number
+      type:Number,
+      default:0
     },
 
     completedOrders:
     {
-      type:Number
+      type:Number,
+      default:0
     },
 
     pendingOrders:
     {
-      type:Number
+      type:Number,
+      default:0
     }
   },
   { timestamps: true }
