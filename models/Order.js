@@ -11,11 +11,11 @@ const OrderSchema = new mongoose.Schema(
       index: true,
     },
 
-    tailorId: [{
+    tailorId:{
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-    }], 
+    }, 
 
     items: [
       {

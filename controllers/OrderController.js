@@ -33,7 +33,7 @@ const placeOrder = async (req, res) =>
             items: orderProducts,
             totalAmount,
             status: "Processing",
-            accepted:"false"
+            accepted:"null"
 
         });
 
@@ -48,7 +48,8 @@ const placeOrder = async (req, res) =>
             success: true,
             message: "Please confirm to proceed with payment.",
             amount: totalAmount,
-            cartItems: cart.items
+            cartItems: cart.items,
+            accepted:order.accepted
         });
         
 
