@@ -11,12 +11,6 @@ const OrderSchema = new mongoose.Schema(
       index: true,
     },
 
-    tailorId:{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    }, 
-
     items: [
       {
         productId: {
@@ -29,24 +23,31 @@ const OrderSchema = new mongoose.Schema(
           required: true,
           min: 1,
         },
+
+        accepted: {
+          type: String,
+          enum:["true", "false","null"],
+          default: "null",
+        },
+        tailorId: 
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+
+        status: {
+          type: String,
+          enum: ["Processing", "Cancelled", "Pending", "Completed"],
+          default: "Processing",
+        },
       },
     ],
+
     totalAmount: {
       type: Number,
       required: true,
       min: 0,
-    },
-
-    status: {
-      type: String,
-      enum: ["Processing", "Cancelled", "Pending", "Completed"],
-      default: "Processing",
-    },
-
-    accepted: {
-      type: String,
-      enum:["true", "false","null"],
-      default: "null",
     },
 
     totalOrders:

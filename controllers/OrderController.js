@@ -1,5 +1,7 @@
 const Order = require("../models/Order");
 const axios = require("axios");
+const Tailor = require("../models/Tailor");
+const mongoose=require('mongoose');
 
 const placeOrder = async (req, res) => 
 {
@@ -7,54 +9,45 @@ const placeOrder = async (req, res) =>
     {
         const userId = req.user.userId;
         const token = req.headers.authorization;
-
         const cartResponse = await axios.get(
             `http://localhost:8000/api/cart/getcart/${userId}`,
             { headers: { Authorization: token } }
         );
-
         const cart = cartResponse.data;
-        //console.log(cart);
-        const tailorId=cart.tailorId;
+        //const tailorIds = cart.items.map(item => new mongoose.Types.ObjectId(item.tailorId));
 
         if (!cart || cart.items.length === 0) {
             return res.status(400).json({ message: "Your cart is empty" });
         }
-
         const totalAmount = cart.totalPrice;
+
         const orderProducts = cart.items.map(item => ({
             productId: item.productId,
-            quantity: item.quantity
+            quantity: item.quantity,
+            accepted: "null",
+            tailorId: item.tailorId,
+            status: "Processing"
         }));
 
         const order = new Order({
             userId,
-            tailorId,
             items: orderProducts,
-            totalAmount,
-            status: "Processing",
-            accepted:"null"
-
+            totalAmount
         });
 
-        console.log(order);
-        
-        await order.save();  
-
+        await order.save(); 
         
         res.status(200).json({
             orderId: order._id,
-            tailorId,
+            order,
             success: true,
             message: "Please confirm to proceed with payment.",
             amount: totalAmount,
-            cartItems: cart.items,
-            accepted:order.accepted
+            
         });
-        
+
 
     } catch (error) {
-        //console.error(error);  
         res.status(500).json({ error: error.message });
     }
 };
@@ -64,8 +57,7 @@ const confirmAndPayOrder = async (req, res) => {
     try {
         const orderId = req.params.orderId;
         const token = req.headers.authorization;
-        console.log(orderId);
-        console.log(token);
+        
         const paymentResponse = await axios.post(
             `http://localhost:8000/api/payment/create/${orderId}`,
             {}, 

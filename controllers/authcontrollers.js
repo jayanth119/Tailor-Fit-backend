@@ -86,7 +86,9 @@ const createProfile = async (req, res) =>
   {
   const { name, phoneNumber, address, photo, dob, gender,usertype } = req.body;
   if(!["customer","tailor"].includes(usertype))
-  return res.status(400).json({ message: "Invalid user type" });
+  {
+    return res.status(400).json({ message: "Invalid user type" });
+  }
 
   const email = req.user.email;
 
@@ -101,13 +103,13 @@ const createProfile = async (req, res) =>
 
       
       const formattedDob = new Date(dob);
-      if (isNaN(formattedDob)) 
+      if (isNaN(formattedDob)) {
           return res.status(400).json({ message: "Invalid date format. Use YYYY-MM-DD." });
+      }
 
-      
-      user.profile = { name, phoneNumber, address, photo, dob: formattedDob, gender ,usertype};
+      user.usertype = usertype;
+      user.profile = { name, phoneNumber, address, photo, dob: formattedDob, gender};
       await user.save();
-
 
       res.json({ message: "Profile updated successfully", id:user._id,profile:user.profile });
     } catch (error) {

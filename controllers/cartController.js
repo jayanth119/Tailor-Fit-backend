@@ -1,18 +1,17 @@
 const axios = require("axios"); 
 const Cart = require("../models/Cart");
-const mongone = require("mongoose");
+const mongoose = require("mongoose");
 const Product = require("../models/productModel");
 
 const addToCart = async (req, res) => 
 {
     try { 
-        const userId = req.user.userId;
-
+        const userId = req.user.userId; 
+        console.log(req.user);
         const  productId  = req.params.productId; 
 
-        const { quantity, tailorId } = req.body;
+        const { quantity,tailorId } = req.body;
 
-        console.log(tailorId);
 
         let product; 
         try 
@@ -28,7 +27,7 @@ const addToCart = async (req, res) =>
 
         let cart = await Cart.findOne({ userId});
         if (!cart) {
-            cart = new Cart({ userId, tailorId,items: [], totalPrice: 0 });
+            cart = new Cart({ userId,items: [], totalPrice: 0 });
         }
         console.log(cart);
 
@@ -42,7 +41,7 @@ const addToCart = async (req, res) =>
         }
          else 
         {
-            cart.items.push({ productId, quantity, price: product.price });
+            cart.items.push({ productId, quantity, price: product.price,tailorId });
         }
   
       // Recalculate the total price safely by checking each item
@@ -56,9 +55,11 @@ const addToCart = async (req, res) =>
   
       await cart.save();
       res.status(200).json({ message: "Item added to cart", cart });
-    } catch (error) {
-      console.error("Add to cart error:", error.message);
-      res.status(500).json({ error: "Something went wrong" });
+    } 
+    catch (error) 
+    {
+      console.error("Add to cart error:", error);
+      res.status(500).json({ error });
     }
   };
 

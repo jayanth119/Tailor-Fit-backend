@@ -1,12 +1,7 @@
 const mongoose = require("mongoose");
 
 const TailorSchema = new mongoose.Schema({
-  name: 
-  {
-    type: String,
-    required: true,
-  },
-
+  
   tailorId: 
   {
     type: mongoose.Schema.Types.ObjectId,
@@ -20,6 +15,7 @@ const TailorSchema = new mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Order",
+      default:[]
     },
   ],
 });
