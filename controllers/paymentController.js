@@ -37,26 +37,33 @@ const createPayment = async (req, res) =>
             notes: { userId, orderId }
         };
 
+        if(order.accepted==="true")
+        {
+            const razorpayOrder = await razorpay.orders.create(options);
+            console.log(razorpayOrder);
         
-        const razorpayOrder = await razorpay.orders.create(options);
-        console.log(razorpayOrder);
-        
-        const payment = new Payment({
-            userId,
-            orderId,
-            razorpayOrderId: razorpayOrder.id,
-            amount,
-            status: "pending"
-        });
-        console.log(payment);
-        await payment.save();
+            const payment = new Payment({
+                userId,
+                orderId,
+                razorpayOrderId: razorpayOrder.id,
+                amount,
+                status: "pending"
+            });
+            console.log(payment);
+            await payment.save();
 
-        res.status(201).json({
-            success: true,
-            message: "Payment initiated",
-            razorpayOrder
-        });
+            res.status(201).json({
+                success: true,
+                message: "Payment initiated",
+                razorpayOrder
+            });
+    }
 
+    else
+    {
+        console.log("Order not accepted yet");
+        res.status(400).json({ message: "Order not accepted yet" });
+    }
 }
     
    catch (error) 
@@ -93,7 +100,7 @@ const verifyPayment = async(req, res) =>
                 return res.status(404).json({ message: "Order not found" });
             }
 
-            order.status="completed";
+            order.status="pending";
             await order.save();
             // Update payment status
             const payment = await Payment.findOneAndUpdate(
