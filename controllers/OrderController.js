@@ -2,18 +2,21 @@ const Order = require("../models/Order");
 const axios = require("axios");
 const Tailor = require("../models/Tailor");
 const mongoose=require('mongoose');
-
+const Cart = require("../models/Cart");
+const Product = require("../models/productModel");
 const placeOrder = async (req, res) => 
 {
     try 
     {
-        const userId = req.user.userId;
-        const token = req.headers.authorization;
-        const cartResponse = await axios.get(
-            `http://localhost:8000/api/cart/getcart/${userId}`,
-            { headers: { Authorization: token } }
-        );
-        const cart = cartResponse.data;
+        const userId = "67f0e33ec34207c80c80f63a";
+        // const token = req.headers.authorization;
+        // const cartResponse = await axios.get(
+        //     `http://localhost:8000/api/cart/getcart/${userId}`,
+        //     { headers: { Authorization: token } }
+        // );
+
+        // const cart = cartResponse.data;
+         const cart = await Cart.findOne({ userId });
         //const tailorIds = cart.items.map(item => new mongoose.Types.ObjectId(item.tailorId));
 
         if (!cart || cart.items.length === 0) {
@@ -96,7 +99,8 @@ const confirmAndPayOrder = async (req, res) => {
 
 const getAllOrders = async (req, res) => {
     try {
-        const userId = req.user.userId;
+        // const userId = req.user.userId;
+        const userId = "67f0e33ec34207c80c80f63a";
         const { page = 1, limit = 5 } = req.query;
 
         const totalOrders = await Order.countDocuments({ userId });

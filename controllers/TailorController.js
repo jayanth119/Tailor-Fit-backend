@@ -302,4 +302,50 @@ const markAsCompleted= async (req, res) => {
   }
 };
 
-module.exports={showAllOrders,getAcceptedOrders,OrderAccept,OrderReject,totalOrders,completedOrders,pendingOrders,markAsCompleted};
+
+const getOrderSummary = async (req, res) => {
+  try {
+    const tailorId = req.params.tailorId;
+    if (!tailorId) {
+      return res.status(400).json({ message: "Tailor ID is required" });
+    }
+    
+    const tailorObjectId = new mongoose.Types.ObjectId(tailorId);
+
+    // Find orders that have at least one item matching the tailor and accepted true.
+    const orders = await Order.find({
+      items: { $elemMatch: { tailorId: tailorObjectId, accepted: "true" } }
+    });
+
+    let totalOrdersCount = 0;
+    let completedOrdersCount = 0;
+    let pendingOrdersCount = 0;
+
+    // Iterate over each order and its items to count the orders.
+    orders.forEach(order => {
+      order.items.forEach(item => {
+        if (item.tailorId.equals(tailorObjectId) && item.accepted === "true") {
+          totalOrdersCount++;
+          if (item.status === "completed") {
+            completedOrdersCount++;
+          } else if (item.status === "pending") {
+            pendingOrdersCount++;
+          }
+        }
+      });
+    });
+
+    // Return zero for any missing data.
+    return res.status(200).json({
+      totalOrders: totalOrdersCount || 0,
+      completedOrdersCount: completedOrdersCount || 0,
+      pendingOrdersCount: pendingOrdersCount || 0,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+module.exports={showAllOrders,getAcceptedOrders,OrderAccept,OrderReject,totalOrders,completedOrders,pendingOrders,markAsCompleted , getOrderSummary};
