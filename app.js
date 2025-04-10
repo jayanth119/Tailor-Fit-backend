@@ -15,6 +15,7 @@ const cartRoutes = require("./routes/cartRoutes");
 const orderRoutes = require("./routes/orderRoutes");;
 const tryonRoutes = require("./routes/tryonRoutes"); 
 const TailorRoutes=require("./routes/TailorRoutes");
+const getClothesId = require('./routes/getClothesRoutes');
 var cors = require("cors");
 
 var app = express();
@@ -35,6 +36,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 // Routes
 app.use("/api/orders", orderRoutes);
+app.use('/api/cloth' , getClothesId); 
 app.use("/api/auth", authroutes);
 app.use('/api/products', productRoutes);
 app.use("/api/cart", cartRoutes); 
